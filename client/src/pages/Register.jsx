@@ -11,6 +11,8 @@ const Register = () => {
 
   const handleRegister = async (e) => {
     e.preventDefault();
+    console.log(name, email, password);
+    
     const success = await register(name, email, password);
     if (success) navigate("/");
   };
