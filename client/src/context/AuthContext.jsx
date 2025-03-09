@@ -1,40 +1,92 @@
-// context/AuthContext.js
-import { createContext, useState, useEffect } from "react";
-import axios from "axios";
 
-export const AuthContext = createContext();
+// src/context/AuthContext.js
+import React, { createContext, useState, useEffect, useContext } from 'react';
+import axios from 'axios';
+
+const AuthContext = createContext();
+
+export const useAuth = () => useContext(AuthContext);
 
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
-
+  const [currentUser, setCurrentUser] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+  
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (token) {
-      axios.get("http://localhost:5000/api/auth/me", { headers: { Authorization: `Bearer ${token}` } })
-        .then((res) => setUser(res.data))
-        .catch(() => localStorage.removeItem("token"));
-    }
+    const fetchCurrentUser = async () => {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        setLoading(false);
+        return;
+      }
+      
+      try {
+        const response = await axios.get('http://localhost:3000/api/me', {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        setCurrentUser(response.data);
+      } catch (error) {
+        console.error('Error fetching current user:', error);
+        localStorage.removeItem('token');
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    fetchCurrentUser();
   }, []);
-
+  
   const login = async (email, password) => {
     try {
-      const res = await axios.post("http://localhost:5000/api/auth/login", { email, password });
-      localStorage.setItem("token", res.data.token);
-      setUser(res.data.user);
+      setError('');
+      const response = await axios.post('http://localhost:3000/api/auth/login', {
+        email,
+        password
+      });
+      
+      const { token, user } = response.data;
+      localStorage.setItem('token', token);
+      setCurrentUser(user);
       return true;
     } catch (error) {
+      setError(error.response?.data?.error || 'Failed to login');
       return false;
     }
   };
-
-  const logout = () => {
-    localStorage.removeItem("token");
-    setUser(null);
+  
+  const register = async (username, email, password) => {
+    try {
+      setError('');
+      await axios.post('http://localhost:3000/api/auth/register', {
+        username,
+        email,
+        password
+      });
+      return true;
+    } catch (error) {
+      setError(error.response?.data?.error || 'Failed to register');
+      return false;
+    }
   };
-
+  
+  const logout = () => {
+    localStorage.removeItem('token');
+    setCurrentUser(null);
+  };
+  
+  const value = {
+    currentUser,
+    loading,
+    error,
+    login,
+    register,
+    logout
+  };
+  
   return (
-    <AuthContext.Provider value={{ user, login, logout }}>
+    <AuthContext.Provider value={value}>
       {children}
     </AuthContext.Provider>
   );
 };
+

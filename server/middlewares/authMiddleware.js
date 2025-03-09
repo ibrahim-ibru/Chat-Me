@@ -1,8 +1,11 @@
+// server/middlewares/authMiddleware.js
 import jwt from "jsonwebtoken";
 
 const authMiddleware = (req, res, next) => {
+  
   const token = req.header("Authorization");
-  if (!token) return res.status(401).json({ error: "Access denied" });
+  console.log("hai");
+  if (!token) return res.status(401).json({ error: "token Access denied" });
 
   try {
     const decoded = jwt.verify(token.replace("Bearer ", ""), process.env.JWT_SECRET);
@@ -14,3 +17,4 @@ const authMiddleware = (req, res, next) => {
 };
 
 export default authMiddleware;
+

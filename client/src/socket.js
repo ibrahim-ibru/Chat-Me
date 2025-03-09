@@ -1,6 +1,8 @@
+
+// /client/src/socket.js
 import { io } from "socket.io-client";
 
-const SOCKET_URL = "http://localhost:5000"; // Your backend URL
+const SOCKET_URL = "http://localhost:3000"; // Your backend URL
 
 export const socket = io(SOCKET_URL, {
   autoConnect: false, // Connect only when needed
@@ -12,3 +14,6 @@ export const connectSocket = (userId) => {
     socket.connect();
   }
 };
+
+
+

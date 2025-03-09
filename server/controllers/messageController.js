@@ -1,7 +1,7 @@
-// controllers/messageController.js
+// server/controllers/messageController.js
 import Message from "../models/Message.js";
 
-export const sendMessage = async (req, res) => {
+export const  sendMessage = async (req, res) => {
   try {
     const { sender, receiver, text } = req.body;
     const message = new Message({ sender, receiver, text });
@@ -26,3 +26,4 @@ export const getMessages = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
+

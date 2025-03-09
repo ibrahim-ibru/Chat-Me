@@ -1,4 +1,4 @@
-// models/Message.js
+// server/models/Message.js
 import mongoose from "mongoose";
 
 const MessageSchema = new mongoose.Schema(
@@ -12,3 +12,5 @@ const MessageSchema = new mongoose.Schema(
 
 const Message = mongoose.model("Message", MessageSchema);
 export default Message;
+
+

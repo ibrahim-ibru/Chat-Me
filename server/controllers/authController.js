@@ -1,13 +1,19 @@
-// controllers/authController.js
+
+
+
+//  /server/controllers/authController.js
 import User from "../models/User.js";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
+import bcrypt from "bcryptjs";
 dotenv.config();
 
 export const register = async (req, res) => {
   try {
     const { username, email, password } = req.body;
-    const newUser = new User({ username, email, password });
+    console.log("haix");
+    const hashPassword = await bcrypt.hash(password, 10);
+    const newUser = new User({ username, email, password: hashPassword });
     await newUser.save();
     res.status(201).json({ message: "User registered successfully" });
   } catch (error) {
@@ -27,3 +33,4 @@ export const login = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
+
